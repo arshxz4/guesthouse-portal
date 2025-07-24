@@ -11,7 +11,7 @@ import {
   Input,
   Snackbar,
   Alert,
-  tableBodyClasses,
+  
 } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import CloseIcon from '@mui/icons-material/Close';
@@ -47,21 +47,21 @@ export default function GuestHouseFormModal({ isOpen, onRequestClose, onSave, in
   ];
 
   // Sync roomDetails with number of rooms
-  useEffect(() => {
-    const currentCount = roomDetails.length;
-    const desiredCount = formData.rooms;
+ useEffect(() => {
+  const currentCount = roomDetails.length;
+  const desiredCount = formData.rooms;
 
-    if (desiredCount > currentCount) {
-      const additionalRows = Array.from({ length: desiredCount - currentCount }, (_, i) => ({
-        id: Date.now() + i,
-        roomNumber: '',
-        occupancy: '',
-      }));
-      setRoomDetails((prev) => [...prev, ...additionalRows]);
-    } else if (desiredCount < currentCount) {
-      setRoomDetails((prev) => prev.slice(0, desiredCount));
-    }
-  }, [formData.rooms]);
+  if (desiredCount > currentCount) {
+    const newRooms = Array.from({ length: desiredCount - currentCount }, (_, i) => ({
+      id: Date.now() + i,
+      roomNumber: '',
+      occupancy: '',
+    }));
+    setRoomDetails((prev) => [...prev, ...newRooms]);
+  } else if (desiredCount < currentCount) {
+    setRoomDetails((prev) => prev.slice(0, desiredCount));
+  }
+}, [formData.rooms]);
 
   // Load initial data
   useEffect(() => {
@@ -100,7 +100,9 @@ const handleAddRoom = () => {
       occupancy: '',
     },
   ]);
+  setFormData((prev) => ({ ...prev, rooms: prev.rooms + 1 }));
 };
+
 
 
   const handleRoomChange = (id, key, value) => {
@@ -159,7 +161,7 @@ const handleAddRoom = () => {
         <Stack spacing={2}>
           <TextField
             fullWidth
-            size ="small"
+            size="small"
             name="name"
             label="Name"
             value={formData.name}
@@ -216,7 +218,7 @@ const handleAddRoom = () => {
           />
 
           <Autocomplete
-          size ="small"
+          size="small"
             multiple
             freeSolo
             disableCloseOnSelect
@@ -290,61 +292,92 @@ const handleAddRoom = () => {
           </Box>
 
           {roomDetails.length === 0 ? (
-            <Typography variant="body2">No rooms added yet.</Typography>
-          ) : (
-            <Box
-              sx={{
-                border: '1px solid #ccc',
-                borderRadius: 2,
-                p: 2,
-                mb: 2,
-                maxHeight: 250,
-                overflowY: 'auto',
-              }}
-            >
-              <Box
-                display="flex"
-                alignItems="center"
-                fontWeight="bold"
-                sx={{ color: 'gray.700', mb: 1 }}
-                gap={2}
-              >
-                <Box sx={{ width: '33%' }}>Room Number</Box>
-                <Box sx={{ width: '33%' }}>Occupancy</Box>
-                <Box sx={{ width: '33%' }}>Action</Box>
-              </Box>
+  <Typography variant="body2">No rooms added yet.</Typography>
+) : (
+  <Box
+    sx={{
+      border: '1px solid #ccc',
+      borderRadius: 2,
+      mb: 2,
+      maxHeight: 250,
+      overflowY: 'auto',
+      bgcolor: '#f3ffd0ff',
+    }}
+  >
+    {/* Sticky Header */}
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 100px',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1,
+        backgroundColor: '#A99CEE',
+        borderBottom: '1px solid #ccc',
+        px: 2,
+        py: 1,
+      }}
+    >
+      <Typography variant="subtitle2" sx={{ alignSelf: 'center' }}>
+        Room Number
+      </Typography>
+      <Typography variant="subtitle2" sx={{ alignSelf: 'center' }}>
+        Occupancy
+      </Typography>
+      <Typography
+        variant="subtitle2"
+        sx={{ textAlign: 'right', alignSelf: 'center' }}
+      >
+        Action
+      </Typography>
+    </Box>
 
-              {roomDetails.map((room) => (
-                <Box key={room.id} display="flex" alignItems="center" gap={2} mb={1}>
-                  <TextField
-                    size="small"
-                    value={room.roomNumber}
-                    onChange={(e) =>
-                      handleRoomChange(room.id, 'roomNumber', e.target.value)
-                    }
-                    sx={{ width: '33%' }}
-                  />
-                  <TextField
-                    size="small"
-                    value={room.occupancy}
-                    onChange={(e) =>
-                      handleRoomChange(room.id, 'occupancy', e.target.value)
-                    }
-                    sx={{ width: '33%' }}
-                  />
-                  <Box sx={{ width: '33%' }}>
-                    <Button
-                      onClick={() => handleRemoveRoom(room.id)}
-                      size="small"
-                      color="error"
-                    >
-                      Remove
-                    </Button>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
-          )}
+    {/* Room Rows */}
+    {roomDetails.map((room) => (
+      <Box
+        key={room.id}
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 100px',
+          alignItems: 'center',
+          px: 2,
+          py: 1,
+          borderBottom: '1px solid #eee',
+        }}
+      >
+        <TextField
+          size="small"
+          fullWidth
+          value={room.roomNumber}
+          onChange={(e) =>
+            handleRoomChange(room.id, 'roomNumber', e.target.value)
+          }
+          placeholder="Enter room no."
+        />
+        <TextField
+          size="small"
+          fullWidth
+          value={room.occupancy}
+          onChange={(e) =>
+            handleRoomChange(room.id, 'occupancy', e.target.value)
+          }
+          placeholder="Enter occupancy"
+        />
+        <Box textAlign="right">
+          <Button
+            onClick={() => handleRemoveRoom(room.id)}
+            size="small"
+            color="error"
+          >
+            Remove
+          </Button>
+        </Box>
+      </Box>
+    ))}
+  </Box>
+)}
+
+
 
           <Box display="flex" justifyContent="flex-end" gap={2}>
             <Button variant="outlined" color="inherit" onClick={onRequestClose}>
