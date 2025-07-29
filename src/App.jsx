@@ -1,21 +1,17 @@
 import React from 'react';
-import GuestHouseTable from './components/GuestHouseTable';
-
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import RoomBookingPortal from './components/RoomBookingPortal'; // Adjust path if needed
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-
-      {/* Background Particles */}
-      
-
-      {/* Foreground Content */}
-      <div className="relative z-10 p-6  text-white">
-        
-
-        <GuestHouseTable />
+    <Router>
+      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
+        <Routes>
+          <Route path="/" element={<Navigate to="/room-booking" />} />
+          <Route path="/room-booking" element={<RoomBookingPortal />} />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 }
 
